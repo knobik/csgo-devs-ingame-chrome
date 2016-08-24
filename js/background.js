@@ -1,6 +1,7 @@
 var background = {
     interval: 10, // minutes
     groupUrl: 'http://steamcommunity.com/groups/Valve/members?content_only=true&p=',
+    devs: [],
 
     init: function() {
         chrome.alarms.create("Start", {
@@ -14,9 +15,12 @@ var background = {
         chrome.browserAction.setBadgeBackgroundColor({color: 'red'});
         chrome.browserAction.setBadgeText({text: '...'});
 
+        this.devs = [];
         this.employesPlayingCsgo(0, 1, function(count){
             chrome.browserAction.setBadgeBackgroundColor({color: 'green'});
             chrome.browserAction.setBadgeText({text: count.toString()});
+
+            chrome.extension.sendMessage({action: "update-csgo-devs"});
         });
     },
 
@@ -38,7 +42,8 @@ var background = {
     employesOnPage: function(page, callback)
     {
         var pageCount = 1,
-            inCsgo = 0;
+            inCsgo = 0,
+            self = this;
 
         this.request(this.groupUrl + page, function(response){
 
@@ -47,7 +52,13 @@ var background = {
             $.each(dom.find('.member_block_content.in-game'), function(_, game){
                 if ($(game).text().indexOf('Counter-Strike: Global Offensive') > -1) {
                     inCsgo++;
+
                 }
+                var link = $(game).find('a');
+                self.devs.push({
+                    name: link.text(),
+                    profile: link.attr('href')
+                });
             });
 
             pageCount = parseInt(dom.find('.pagelink:last').text());
