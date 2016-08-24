@@ -1,0 +1,1 @@
+chrome.tabs.create({ url: "http://steamcommunity.com/groups/Valve#members" });
