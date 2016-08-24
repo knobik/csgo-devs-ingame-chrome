@@ -52,13 +52,12 @@ var background = {
             $.each(dom.find('.member_block_content.in-game'), function(_, game){
                 if ($(game).text().indexOf('Counter-Strike: Global Offensive') > -1) {
                     inCsgo++;
-
+                    var link = $(game).find('a');
+                    self.devs.push({
+                        name: link.text(),
+                        profile: link.attr('href')
+                    });
                 }
-                var link = $(game).find('a');
-                self.devs.push({
-                    name: link.text(),
-                    profile: link.attr('href')
-                });
             });
 
             pageCount = parseInt(dom.find('.pagelink:last').text());
